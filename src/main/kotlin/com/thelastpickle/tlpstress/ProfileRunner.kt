@@ -1,13 +1,18 @@
 package com.thelastpickle.tlpstress
 
+import com.datastax.driver.core.ResultSet
 import com.datastax.driver.core.ResultSetFuture
 import com.datastax.driver.core.Session
+import com.google.common.util.concurrent.FutureCallback
+import com.google.common.util.concurrent.Futures
 import com.thelastpickle.tlpstress.profiles.IStressProfile
 import com.thelastpickle.tlpstress.profiles.Operation
 import mu.KotlinLogging
+import java.util.concurrent.Semaphore
 import kotlin.math.log
 
 private val logger = KotlinLogging.logger {}
+
 
 /**
  * Single threaded profile runner.
@@ -33,7 +38,10 @@ class ProfileRunner(val context: StressContext, val profile: IStressProfile) {
         profile.prepare(context.session)
 
         logger.info { "Starting up runner" }
-        val inFlight = mutableListOf<ResultSetFuture>()
+
+        // we're going to (for now) only keep 500 in flight queries
+        var sem = Semaphore(1000)
+
 
         for(x in 1..max) {
             // get next thing from the profile
@@ -49,9 +57,22 @@ class ProfileRunner(val context: StressContext, val profile: IStressProfile) {
             when(op) {
                 is Operation.Statement -> {
                     logger.debug { op }
+
+                    sem.acquire()
+
                     val future = context.session.executeAsync(op.bound)
-                    inFlight.add(future)
-                    context.requests.mark()
+
+                    Futures.addCallback(future, object : FutureCallback<ResultSet> {
+                        override fun onFailure(t: Throwable?) {
+                            sem.release()
+                            context.errors.mark()
+                        }
+
+                        override fun onSuccess(result: ResultSet?) {
+                            sem.release()
+                            context.requests.mark()
+                        }
+                    } )
                 }
             }
         }

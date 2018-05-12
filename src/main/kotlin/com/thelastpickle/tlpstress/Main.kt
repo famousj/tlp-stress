@@ -128,6 +128,7 @@ fun main(argv: Array<String>) {
     reporter.start(1, TimeUnit.SECONDS)
 
     val requests = metrics.meter("requests")
+    val errors = metrics.meter("errors")
 
     // run the prepare for each
     val runners = IntRange(0, mainArgs.threads-1).map {
@@ -136,7 +137,7 @@ fun main(argv: Array<String>) {
         session.execute("use ${mainArgs.keyspace}")
 
         println("Connected")
-        val context = StressContext(session, mainArgs, it, requests)
+        val context = StressContext(session, mainArgs, it, requests, errors)
         ProfileRunner.create(context, profile)
     }
 
