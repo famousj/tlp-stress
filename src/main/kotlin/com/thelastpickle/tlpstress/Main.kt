@@ -133,8 +133,7 @@ fun main(argv: Array<String>) {
     // run the prepare for each
     val runners = IntRange(0, mainArgs.threads-1).map {
         println("Connecting")
-        val session = cluster.connect()
-        session.execute("use ${mainArgs.keyspace}")
+        val session = cluster.connect(mainArgs.keyspace)
 
         println("Connected")
         val context = StressContext(session, mainArgs, it, requests, errors)

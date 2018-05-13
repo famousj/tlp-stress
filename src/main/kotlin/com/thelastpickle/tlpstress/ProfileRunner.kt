@@ -1,15 +1,12 @@
 package com.thelastpickle.tlpstress
 
 import com.datastax.driver.core.ResultSet
-import com.datastax.driver.core.ResultSetFuture
-import com.datastax.driver.core.Session
 import com.google.common.util.concurrent.FutureCallback
 import com.google.common.util.concurrent.Futures
 import com.thelastpickle.tlpstress.profiles.IStressProfile
 import com.thelastpickle.tlpstress.profiles.Operation
 import mu.KotlinLogging
 import java.util.concurrent.Semaphore
-import kotlin.math.log
 
 private val logger = KotlinLogging.logger {}
 

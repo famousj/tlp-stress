@@ -42,6 +42,7 @@ class BasicTimeSeries : IStressProfile {
 
     class TimeSeriesRunner(val insert: PreparedStatement) : IStressRunner {
         override fun getNextOperation(i: Int) : Operation {
+            // TODO: instead of getting the sensor id from random lets grab it from the PartitionKeyGenerator
             val sensorId = ThreadLocalRandom.current().nextInt(1, 1000)
 
             val bound = insert.bind(sensorId, randomString(100))
