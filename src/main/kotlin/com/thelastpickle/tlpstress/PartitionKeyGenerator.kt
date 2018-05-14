@@ -11,22 +11,21 @@ import kotlin.coroutines.experimental.buildSequence
  */
 
 class PartitionKeyGenerator(
-        val genFunc: () -> Int,
+        val genFunc: (max: Int) -> Int,
         val prefix: String) {
     /**
      *
      */
     companion object {
-        fun random(prefix: String = "test",
-                   max: Int = 1000000) : PartitionKeyGenerator {
-            return PartitionKeyGenerator({ThreadLocalRandom.current().nextInt(1, max) }, prefix)
+        fun random(prefix: String = "test") : PartitionKeyGenerator {
+            return PartitionKeyGenerator({max -> ThreadLocalRandom.current().nextInt(1, max) }, prefix)
         }
     }
 
 
-    fun generateKeys() = buildSequence {
+    fun generateKeys(max: Int) = buildSequence {
         while(true) {
-            val tmp = genFunc()
+            val tmp = genFunc(max)
             val result = prefix + tmp.toString()
             yield(result)
         }
