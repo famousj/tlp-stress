@@ -17,11 +17,15 @@ private val logger = KotlinLogging.logger {}
  * Logs all errors along the way
  * Keeps track of useful metrics, per thread
  */
-class ProfileRunner(val context: StressContext, val profile: IStressProfile) {
+class ProfileRunner(val context: StressContext,
+                    val profile: IStressProfile,
+                    val partitionKeyGenerator: PartitionKeyGenerator) {
 
     companion object {
         fun create(context: StressContext, profile: IStressProfile) : ProfileRunner {
-            return ProfileRunner(context, profile)
+            val prefix = context.mainArguments.id + "."
+            val partitionKeyGenerator = PartitionKeyGenerator.random(prefix)
+            return ProfileRunner(context, profile, partitionKeyGenerator)
         }
     }
 
@@ -30,17 +34,16 @@ class ProfileRunner(val context: StressContext, val profile: IStressProfile) {
      */
     fun run() {
 
-        val max = context.mainArguments.iterations
-
         profile.prepare(context.session)
 
         logger.info { "Starting up runner" }
 
-        // we're going to (for now) only keep 500 in flight queries
+        // we're going to (for now) only keep 1000 in flight queries per session
+        // might move this to the context if i share the session
         var sem = Semaphore(1000)
 
+        for(key in partitionKeyGenerator.generateKey(context.mainArguments.iterations, 10000)) {
 
-        for(x in 1..max) {
             // get next thing from the profile
             // thing could be a statement, or it could be a failure command
             // certain profiles will want to deterministically inject failures
@@ -49,7 +52,7 @@ class ProfileRunner(val context: StressContext, val profile: IStressProfile) {
             // without having to write that code in the profile
 
             val runner = profile.getRunner()
-            val op = runner.getNextOperation(x)
+            val op = runner.getNextOperation(key)
 
             when(op) {
                 is Operation.Statement -> {

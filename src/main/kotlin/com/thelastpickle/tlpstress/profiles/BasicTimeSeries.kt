@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom
 class BasicTimeSeries : IStressProfile {
     override fun schema(): List<String> {
         val query = """CREATE TABLE IF NOT EXISTS sensor_data (
-                            |sensor_id int,
+                            |sensor_id text,
                             |timestamp timeuuid,
                             |data text,
                             |primary key(sensor_id, timestamp))
@@ -41,11 +41,10 @@ class BasicTimeSeries : IStressProfile {
     }
 
     class TimeSeriesRunner(val insert: PreparedStatement) : IStressRunner {
-        override fun getNextOperation(i: Int) : Operation {
+        override fun getNextOperation(partitionKey: String) : Operation {
             // TODO: instead of getting the sensor id from random lets grab it from the PartitionKeyGenerator
-            val sensorId = ThreadLocalRandom.current().nextInt(1, 1000)
 
-            val bound = insert.bind(sensorId, randomString(100))
+            val bound = insert.bind(partitionKey, randomString(100))
             return Operation.Statement(bound)
         }
 

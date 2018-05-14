@@ -4,7 +4,7 @@ import com.datastax.driver.core.Session
 import com.datastax.driver.core.BoundStatement
 
 interface IStressRunner {
-    fun getNextOperation(i: Int) : Operation
+    fun getNextOperation(partitionKey: String) : Operation
 }
 
 interface IStressProfile {
