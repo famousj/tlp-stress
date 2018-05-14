@@ -55,7 +55,7 @@ class ProfileRunner(val context: StressContext,
             val op = runner.getNextOperation(key)
 
             when(op) {
-                is Operation.InsertStatement -> {
+                is Operation.Mutation -> {
                     logger.debug { op }
 
                     sem.acquire()

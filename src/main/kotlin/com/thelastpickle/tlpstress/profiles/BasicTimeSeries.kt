@@ -39,8 +39,10 @@ class BasicTimeSeries : IStressProfile {
 
     class TimeSeriesRunner(val insert: PreparedStatement) : IStressRunner {
         override fun getNextOperation(partitionKey: String) : Operation {
-            val bound = insert.bind(partitionKey, randomString(100))
-            return Operation.InsertStatement(bound)
+            val data = randomString(100)
+            val bound = insert.bind(partitionKey, data)
+            val fields = mapOf("data" to data)
+            return Operation.Mutation(bound, fields)
         }
 
     }
