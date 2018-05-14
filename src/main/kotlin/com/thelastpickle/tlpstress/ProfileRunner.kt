@@ -55,7 +55,7 @@ class ProfileRunner(val context: StressContext,
             val op = runner.getNextOperation(key)
 
             when(op) {
-                is Operation.Statement -> {
+                is Operation.InsertStatement -> {
                     logger.debug { op }
 
                     sem.acquire()
@@ -71,6 +71,7 @@ class ProfileRunner(val context: StressContext,
                         override fun onSuccess(result: ResultSet?) {
                             sem.release()
                             context.requests.mark()
+
                         }
                     } )
                 }
