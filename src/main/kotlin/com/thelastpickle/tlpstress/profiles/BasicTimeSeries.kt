@@ -13,13 +13,12 @@ import java.util.concurrent.ThreadLocalRandom
 class BasicTimeSeries : IStressProfile {
     override fun schema(): List<String> {
         val query = """CREATE TABLE IF NOT EXISTS sensor_data (
-                            |sensor_id text,
-                            |timestamp timeuuid,
-                            |data text,
-                            |primary key(sensor_id, timestamp))
-                            |WITH CLUSTERING ORDER BY (timestamp DESC)
-                            |
-                            |""".trimMargin()
+                            sensor_id text,
+                            timestamp timeuuid,
+                            data text,
+                            primary key(sensor_id, timestamp))
+                            WITH CLUSTERING ORDER BY (timestamp DESC)
+                           """.trimIndent()
 
         return listOf(query)
     }
