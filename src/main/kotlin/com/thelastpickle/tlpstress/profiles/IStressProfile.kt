@@ -56,6 +56,8 @@ interface IStressProfile {
 sealed class Operation {
     // we're going to track metrics on the mutations differently
     // inserts will also carry data that might be saved for later validation
+    // TODO needs to be updated to hold full primary key
+    // clustering keys won't be realistic to compute in the framework
     data class Mutation(val bound: BoundStatement,
                         val fields: Map<String, Any>) : Operation()
     data class SelectStatement(var bound: BoundStatement): Operation()
