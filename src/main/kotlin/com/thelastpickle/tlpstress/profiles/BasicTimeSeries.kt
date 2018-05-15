@@ -2,7 +2,9 @@ package com.thelastpickle.tlpstress.profiles
 
 import com.datastax.driver.core.PreparedStatement
 import com.datastax.driver.core.Session
+import com.thelastpickle.tlpstress.PrimaryKeySampler
 import com.thelastpickle.tlpstress.randomString
+import com.thelastpickle.tlpstress.samplers.ISampler
 
 data class PartitionKey(val first: String)
 
@@ -11,6 +13,11 @@ data class PartitionKey(val first: String)
  * TODO make it use TWCS
  */
 class BasicTimeSeries : IStressProfile {
+
+    override fun getSampler(): ISampler {
+        return PrimaryKeySampler(0.1)
+    }
+
     override fun schema(): List<String> {
         val query = """CREATE TABLE IF NOT EXISTS sensor_data (
                             sensor_id text,

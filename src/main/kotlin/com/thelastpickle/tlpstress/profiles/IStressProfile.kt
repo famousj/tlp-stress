@@ -2,6 +2,7 @@ package com.thelastpickle.tlpstress.profiles
 
 import com.datastax.driver.core.Session
 import com.datastax.driver.core.BoundStatement
+import com.thelastpickle.tlpstress.samplers.ISampler
 
 interface IStressRunner {
     fun getNextOperation(partitionKey: String) : Operation
@@ -50,6 +51,9 @@ interface IStressProfile {
      * this allows the code to be a little cleaner
      */
     fun getRunner(): IStressRunner
+
+
+    fun getSampler() : ISampler
 }
 
 

@@ -1,6 +1,5 @@
-package com.thelastpickle
+package com.thelastpickle.tlpstress
 
-import com.thelastpickle.tlpstress.PartitionKeyGenerator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

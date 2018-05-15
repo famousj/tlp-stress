@@ -58,7 +58,8 @@ class ProfileRunner(val context: StressContext,
 
         var operations = 0
 
-        var samples = Sampler(.1)
+        val sampler = profile.getSampler()
+        val runner = profile.getRunner()
 
         for (key in partitionKeyGenerator.generateKey(iterations, context.mainArguments.partitionValues)) {
 
@@ -69,7 +70,6 @@ class ProfileRunner(val context: StressContext,
             // I should be able to just tell the runner to inject gossip failures in any test
             // without having to write that code in the profile
 
-            val runner = profile.getRunner()
             val op = runner.getNextOperation(key)
             // TODO: instead of using the context request & errors, pass them in
             // that way this can be reused for the pre-population
@@ -93,7 +93,7 @@ class ProfileRunner(val context: StressContext,
                             // if not, use the sampler frequency
                             // need to be mindful of memory, frequency is a stopgap
                             context.requests.mark()
-                            samples.maybePut(op.partitionKey, null, op.fields)
+                            sampler.maybePut(op.partitionKey, op.fields)
 
                         }
                     })
