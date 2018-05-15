@@ -45,6 +45,8 @@ class ProfileRunner(val context: StressContext,
         // might move this to the context if i share the session
 
         executeOperations(context.mainArguments.iterations)
+
+        verify()
     }
 
     /**
@@ -53,7 +55,11 @@ class ProfileRunner(val context: StressContext,
     private fun executeOperations(iterations: Int) {
         var sem = Semaphore(1000)
 
+
         var operations = 0
+
+        var samples = Sampler(.1)
+
         for (key in partitionKeyGenerator.generateKey(iterations, context.mainArguments.partitionValues)) {
 
             // get next thing from the profile
@@ -83,7 +89,11 @@ class ProfileRunner(val context: StressContext,
 
                         override fun onSuccess(result: ResultSet?) {
                             sem.release()
+                            // if the key returned in the Mutation exists in the sampler, store the fields
+                            // if not, use the sampler frequency
+                            // need to be mindful of memory, frequency is a stopgap
                             context.requests.mark()
+                            samples.maybePut(op.partitionKey, null, op.fields)
 
                         }
                     })
@@ -98,6 +108,7 @@ class ProfileRunner(val context: StressContext,
 
 
     fun verify() {
+        println("Verifying dataset")
 
     }
 

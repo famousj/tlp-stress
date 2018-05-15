@@ -4,6 +4,8 @@ import com.datastax.driver.core.PreparedStatement
 import com.datastax.driver.core.Session
 import com.thelastpickle.tlpstress.randomString
 
+data class PartitionKey(val first: String)
+
 /**
  * Create a simple time series use case with some number of partitions
  * TODO make it use TWCS
@@ -42,7 +44,7 @@ class BasicTimeSeries : IStressProfile {
             val data = randomString(100)
             val bound = insert.bind(partitionKey, data)
             val fields = mapOf("data" to data)
-            return Operation.Mutation(bound, fields)
+            return Operation.Mutation(bound, PartitionKey("sensor_id"), fields)
         }
 
     }

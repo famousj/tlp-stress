@@ -59,7 +59,9 @@ sealed class Operation {
     // TODO needs to be updated to hold full primary key
     // clustering keys won't be realistic to compute in the framework
     data class Mutation(val bound: BoundStatement,
+                        val partitionKey: Any,
                         val fields: Map<String, Any>) : Operation()
+
     data class SelectStatement(var bound: BoundStatement): Operation()
     // JMX commands
 
