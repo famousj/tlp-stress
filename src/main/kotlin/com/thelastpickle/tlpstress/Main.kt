@@ -40,6 +40,9 @@ class MainArguments {
     @Parameter(names = ["--id"], description = "Identifier for this run, will be used in partition keys.  Make unique for when starting concurrent runners.")
     var id = "001"
 
+    @Parameter(names = ["--partitionValues", "--pv"], description = "Max value of integer component of first partition key.")
+    var partitionValues = 1000000
+
 
 
 }
@@ -155,10 +158,11 @@ fun main(argv: Array<String>) {
     // hopefully at this point we have a valid stress profile to run
     println("Stress complete, $runnersExecuted.")
 
+    Thread.sleep(1000)
+
     reporter.report()
 
     // dump out metrics
     System.exit(0)
 }
-
 

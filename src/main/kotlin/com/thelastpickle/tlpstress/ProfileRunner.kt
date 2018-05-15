@@ -23,7 +23,7 @@ class ProfileRunner(val context: StressContext,
 
     companion object {
         fun create(context: StressContext, profile: IStressProfile) : ProfileRunner {
-            val prefix = context.mainArguments.id + "."
+            val prefix = context.mainArguments.id + "." + context.thread + "."
             val partitionKeyGenerator = PartitionKeyGenerator.random(prefix)
             return ProfileRunner(context, profile, partitionKeyGenerator)
         }
@@ -38,11 +38,23 @@ class ProfileRunner(val context: StressContext,
 
         logger.info { "Starting up runner" }
 
+        // populate
+
+
         // we're going to (for now) only keep 1000 in flight queries per session
         // might move this to the context if i share the session
+
+        executeOperations(context.mainArguments.iterations)
+    }
+
+    /**
+     * Used for both pre-populating data and for performing the actual runner
+     */
+    private fun executeOperations(iterations: Int) {
         var sem = Semaphore(1000)
 
-        for(key in partitionKeyGenerator.generateKey(context.mainArguments.iterations, 10000)) {
+        var operations = 0
+        for (key in partitionKeyGenerator.generateKey(iterations, context.mainArguments.partitionValues)) {
 
             // get next thing from the profile
             // thing could be a statement, or it could be a failure command
@@ -53,8 +65,7 @@ class ProfileRunner(val context: StressContext,
 
             val runner = profile.getRunner()
             val op = runner.getNextOperation(key)
-
-            when(op) {
+            when (op) {
                 is Operation.Mutation -> {
                     logger.debug { op }
 
@@ -73,11 +84,15 @@ class ProfileRunner(val context: StressContext,
                             context.requests.mark()
 
                         }
-                    } )
+                    })
                 }
             }
+            operations++
         }
+
+        println("Operations: $operations")
     }
+
 
     fun verify() {
 
