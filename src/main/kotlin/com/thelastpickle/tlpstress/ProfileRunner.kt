@@ -65,6 +65,8 @@ class ProfileRunner(val context: StressContext,
 
             val runner = profile.getRunner()
             val op = runner.getNextOperation(key)
+            // TODO: instead of using the context request & errors, pass them in
+            // that way this can be reused for the pre-population
             when (op) {
                 is Operation.Mutation -> {
                     logger.debug { op }
@@ -87,6 +89,7 @@ class ProfileRunner(val context: StressContext,
                     })
                 }
             }
+            // TODO: it's possible for operations to stay open, need to ensure they get closed out before continuing
             operations++
         }
 
