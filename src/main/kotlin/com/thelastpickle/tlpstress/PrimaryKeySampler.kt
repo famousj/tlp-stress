@@ -1,8 +1,8 @@
 package com.thelastpickle.tlpstress
 
+import com.thelastpickle.tlpstress.samplers.Fields
 import com.thelastpickle.tlpstress.samplers.ISampler
 import java.util.concurrent.ThreadLocalRandom
-
 
 /**
  * data sampler for holding onto stuff we want
@@ -11,9 +11,13 @@ import java.util.concurrent.ThreadLocalRandom
  * if a key is already held, we updated it
  */
 class PrimaryKeySampler(val rate: Double) : ISampler {
+    override fun iterator(): Iterator<Fields> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     var data = mutableMapOf<Any, Any>()
 
-    override fun maybePut(primaryKey: Any, fields: Any) {
+    override fun maybePut(primaryKey: Any, fields: Fields) {
         var shouldAdd = false
 
         if(data.contains(primaryKey))

@@ -1,5 +1,7 @@
 package com.thelastpickle.tlpstress.samplers
 
-interface ISampler {
-    fun maybePut(primaryKey: Any, fields: Any)
+typealias Fields = Map<String, Any>
+
+interface ISampler : Iterable<Fields> {
+    fun maybePut(primaryKey: Any, fields: Fields)
 }
