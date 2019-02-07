@@ -22,3 +22,5 @@ services:
 
         command: asciidoctor -o /html/index.html MANUAL.adoc
 
+
+

@@ -14,6 +14,7 @@ RUN apt-get update \
         git \
         rpm \
         ruby-dev \
+        gradle \
     && gem install fpm
 
 # Define working directory.
